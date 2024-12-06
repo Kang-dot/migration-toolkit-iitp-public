@@ -727,6 +727,7 @@ public final class MigrationTemplateHandler extends
 		vertex.setVertexType(Integer.parseInt(attr.getValue("vertex_type")));
 		vertex.setTableName(attr.getValue("table_name"));
 		vertex.setOwner(attr.getValue("table_owner"));
+		vertex.setHasDateTimeFilter(Boolean.parseBoolean(attr.getValue("has_filter")));
 		
 		if (config.isCdc()) {
 			vertex.setOid(Long.parseLong(attr.getValue("table_oid")));
@@ -764,6 +765,15 @@ public final class MigrationTemplateHandler extends
 		col.setGraphDataType(attr.getValue("graph_type"));
 		col.setPrecision(Integer.valueOf(attr.getValue("precision")));
 		col.setScale(Integer.valueOf(attr.getValue("scale")));
+		
+		String startValue = attr.getValue("start_datetime_value");
+		String endValue = attr.getValue("end_datetime_value");
+		
+		if (startValue != null && endValue != null) {
+			col.setFromDate(attr.getValue("start_datetime_value"));
+			col.setToDate(attr.getValue("end_datetime_value"));
+			col.setConditionColumn(Boolean.parseBoolean(attr.getValue("condition_column")));
+		}
 		
 		targetVertex.addColumn(col);
 	}
@@ -833,6 +843,7 @@ public final class MigrationTemplateHandler extends
 				config.setTargetFileTimeZone(attr.getValue(TemplateTags.ATTR_TIMEZONE));
 				config.setOneTableOneFile(getBoolean(attr.getValue(TemplateTags.ATTR_ONETABLEONEFILE),
 						false));
+				config.setGraphSubTyteForCSV(Integer.parseInt(attr.getValue("sub_type")));
 				final String fileMaxSize = attr.getValue(TemplateTags.ATTR_FILE_MAX_SIZE);
 				config.setMaxCountPerFile(fileMaxSize == null ? 0 : Integer.parseInt(fileMaxSize));
 				config.setTargetFilePrefix(attr.getValue(TemplateTags.ATTR_OUTPUT_FILE_PREFIX));
